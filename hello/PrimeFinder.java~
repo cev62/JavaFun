@@ -1,0 +1,30 @@
+import java.util.*;
+
+public class PrimeFinder{
+  
+  int checker(int a,int b){
+   int check=a % b;
+   return check;
+  }
+  
+  public static void main(String[] args){
+  
+    for(int test=2; test<100; test++){
+    
+      for(int sqtest=sqrt(test); sqtest>1; sqtest--){
+       
+        
+        if(checker(test, sqtest) == 0){
+        int istrue=0;
+          break;
+        }
+        
+
+        
+      }
+      if (istrue==0){break;}
+      else{System.out.println(test);}
+      
+    }
+  }
+}

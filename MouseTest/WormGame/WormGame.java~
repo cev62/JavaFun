@@ -1,0 +1,390 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+import java.util.Random;
+import java.lang.Math;
+
+public class WormGame extends JFrame
+  implements ActionListener, KeyListener, MouseListener
+{
+  
+  int numOfObjects=100;
+  boolean foodCheck=true;
+  boolean enemyCheck=true;
+    Random rand;
+  JLabel label;
+  Timer timer;
+  BallStorage[] ball=new BallStorage[numOfObjects+1];
+  Ellipse2D[] b=new Ellipse2D[numOfObjects+1];
+  FoodStorage[] food=new FoodStorage[numOfObjects];
+  EnemyStorage[] enemy=new EnemyStorage[numOfObjects];
+  Rectangle2D.Double f;
+  Ellipse2D.Double e;
+  int i=0;
+  int cirCount=0;
+  int foodCount=1;
+  int enemyCount=1;
+  
+   boolean rightkeycheck=false;
+  boolean leftkeycheck=false;
+  boolean upkeycheck=false;
+  boolean downkeycheck=false;
+  
+  double variationMultiplier=.75;
+  double distCoef=0;
+  double distBetweenCirclesXCoef=0;
+  double distBetweenCirclesYCoef=0;
+  double distPointsCoef=0.1;
+  double change=.3;
+  double size=10;
+  
+  
+  public WormGame(){
+    
+    Container window = getContentPane();
+  addKeyListener(this);
+  addMouseListener(this);
+  setSize(600,400);
+  setFocusable(true);
+  setTitle("Worm Game");
+  setVisible(true);
+  window.setLayout(new BorderLayout());
+  label=new JLabel("", JLabel.CENTER);
+  label.setForeground(Color.BLACK);
+  window.add(label, BorderLayout.NORTH);
+  window.setBackground(Color.WHITE); 
+    timer=new Timer(20,this);
+    timer.start();
+    
+   
+   
+   rand=new Random();
+    
+    
+    
+    while(i<numOfObjects+1){
+  ball[i]=new BallStorage();
+  i++;
+  }
+    
+    i=0;
+    while(i<numOfObjects){
+     food[i]=new FoodStorage(rand.nextInt(500)+50,rand.nextInt(300)+50);
+     i++;
+    }
+    
+    i=0;
+    while(i<numOfObjects){
+     enemy[i]=new EnemyStorage(rand.nextInt(500)+50,rand.nextInt(300)+50);
+     i++;
+    }
+    
+    
+    
+    ball[1].isLeader=true;
+    ball[1].setPoint(300,200);
+    ball[1].setSize(size,size);
+    cirCount++;
+    repaint();
+  }
+  
+  public void paint(Graphics g){
+   super.paint(g);
+    Graphics2D g2d = (Graphics2D)g;
+    
+    if(foodCheck){
+     g2d.draw(f=new Rectangle2D.Double((double)food[foodCount].x,(double)food[foodCount].y,size,size));
+     g2d.fill(f);
+    }
+    
+    if(enemyCheck){
+     g2d.draw(e=new Ellipse2D.Double((double)enemy[enemyCount].x,(double)enemy[enemyCount].y,2*size,2*size));
+     g2d.fill(e);
+    }
+    
+    int k=1;
+      while(k<=cirCount){
+      g2d.draw(b[k]=new Ellipse2D.Double(ball[k].getX()-ball[k].getXSize()/2,ball[k].getY()-ball[k].getYSize()/2,ball[k].getXSize(),ball[k].getYSize()));
+      if(k==1){
+      g2d.fill(b[k]);
+      }
+      k++;
+  }
+  }
+  
+  public void actionPerformed(ActionEvent evt){
+    if(evt.getSource()==timer){
+      
+      physics();
+      suicide();
+      //label.setText(Integer.toString(cirCount)+", "+Integer.toString(foodCount));
+     repaint(); 
+     eat();
+    }
+  }
+  
+  
+  
+  public void mousePressed(MouseEvent m){
+    
+  newFood();
+  newBall();
+  }
+  
+   public void keyReleased(KeyEvent k){
+    if(k.getKeyCode()==37){
+      leftkeycheck=false;
+      if(rightkeycheck){
+       ball[1].xa=change; 
+      }
+      else{
+     ball[1].xa=0; 
+      }
+    }
+    if(k.getKeyCode()==39){
+     rightkeycheck=false;
+     if(leftkeycheck){
+      ball[1].xa=-change; 
+     }
+     else{
+       ball[1].xa=0;
+     }
+    }
+    if(k.getKeyCode()==38){
+      upkeycheck=false;
+      if(downkeycheck){
+     ball[1].ya=change; 
+      }
+      else{
+      ball[1].ya=0; 
+      }
+    }
+    if(k.getKeyCode()==40){
+      downkeycheck=false;
+      if(upkeycheck){
+        ball[1].ya=-change;
+      }
+      else{
+     ball[1].ya=0;
+      }
+    }
+  }
+  
+  public void keyTyped(KeyEvent k){
+    
+  }
+  
+   public void keyPressed(KeyEvent k){
+     if(k.getKeyCode()==37){
+       leftkeycheck=true;
+     ball[1].xa=-change;
+   }
+     if(k.getKeyCode()==38){
+       upkeycheck=true;
+     ball[1].ya=-change;
+   }
+     if(k.getKeyCode()==39){
+       rightkeycheck=true;
+     ball[1].xa=change;
+   }
+     if(k.getKeyCode()==40){
+       downkeycheck=true;
+     ball[1].ya=change;
+   }
+  }
+  
+  public void mouseReleased(MouseEvent m){
+    
+  }
+  
+  public void mouseExited(MouseEvent m){
+    
+  }
+  
+  public void mouseEntered(MouseEvent m){
+    
+  }
+  
+  public void mouseClicked(MouseEvent m){
+    
+  }
+  
+  public void newBall(){
+   if(cirCount<numOfObjects){
+      cirCount++;
+      double x=ball[cirCount-1].x;
+      double y=ball[cirCount-1].y;
+    ball[cirCount].setPoint(x,y);
+    ball[cirCount].setSize(size,size);
+    repaint();
+  } 
+  }
+  
+  public void physics(){
+     
+    enemy[enemyCount].physics();
+    enemy[enemyCount].move();
+    
+   int k=cirCount;
+   while(k>1){
+     
+    ball[k].old11xv=ball[k].old10xv;
+     ball[k].old11yv=ball[k].old10yv;
+     
+     ball[k].old10xv=ball[k].old9xv;
+     ball[k].old10yv=ball[k].old9yv;
+     
+     ball[k].old9xv=ball[k].old8xv;
+     ball[k].old9yv=ball[k].old8yv;
+     
+     ball[k].old8xv=ball[k].old7xv;
+     ball[k].old8yv=ball[k].old7yv;
+     
+     ball[k].old7xv=ball[k].old6xv;
+     ball[k].old7yv=ball[k].old6yv;
+     
+     ball[k].old6xv=ball[k].old5xv;
+     ball[k].old6yv=ball[k].old5yv;
+   
+    ball[k].old5xv=ball[k].old4xv;
+     ball[k].old5yv=ball[k].old4yv;
+     
+     ball[k].old4xv=ball[k].old3xv;
+     ball[k].old4yv=ball[k].old3yv;
+     
+     ball[k].old3xv=ball[k].old2xv;
+     ball[k].old3yv=ball[k].old2yv;
+     
+     ball[k].old2xv=ball[k].old1xv;
+     ball[k].old2yv=ball[k].old1yv;
+     
+     ball[k].old1xv=ball[k].oldxv;
+     ball[k].old1yv=ball[k].oldyv;
+ 
+     
+     ball[k].xv=variationMultiplier*(1+distCoef*distBetweenCirclesXCoef)*ball[k-1].old3xv+distPointsCoef*distPoints1D(ball[k].x,ball[k-1].x+(distBetweenCirclesXCoef*size));
+     ball[k].yv=variationMultiplier*(1+distCoef*distBetweenCirclesYCoef)*ball[k-1].old3yv+distPointsCoef*distPoints1D(ball[k].y,ball[k-1].y+(distBetweenCirclesYCoef*size));
+     ball[k].oldxv=ball[k].xv;
+     ball[k].oldyv=ball[k].yv;
+       ball[k].physics();
+      
+    k=k-1;
+  }
+   k=1;
+     ball[k].old11xv=ball[k].old10xv;
+     ball[k].old11yv=ball[k].old10yv;
+     
+     ball[k].old10xv=ball[k].old9xv;
+     ball[k].old10yv=ball[k].old9yv;
+     
+     ball[k].old9xv=ball[k].old8xv;
+     ball[k].old9yv=ball[k].old8yv;
+     
+     ball[k].old8xv=ball[k].old7xv;
+     ball[k].old8yv=ball[k].old7yv;
+     
+     ball[k].old7xv=ball[k].old6xv;
+     ball[k].old7yv=ball[k].old6yv;
+     
+     ball[k].old6xv=ball[k].old5xv;
+     ball[k].old6yv=ball[k].old5yv;
+   
+    ball[k].old5xv=ball[k].old4xv;
+     ball[k].old5yv=ball[k].old4yv;
+     
+     ball[k].old4xv=ball[k].old3xv;
+     ball[k].old4yv=ball[k].old3yv;
+     
+     ball[k].old3xv=ball[k].old2xv;
+     ball[k].old3yv=ball[k].old2yv;
+     
+     ball[k].old2xv=ball[k].old1xv;
+     ball[k].old2yv=ball[k].old1yv;
+     
+     ball[k].old1xv=ball[k].oldxv;
+     ball[k].old1yv=ball[k].oldyv;
+     
+         ball[1].physics();
+ ball[k].oldxv=ball[k].xv;
+     ball[k].oldyv=ball[k].yv;
+
+    
+    
+    k=1;
+    while(k<=cirCount){
+     ball[k].move();
+     k++;
+    }
+    
+  }
+  
+  public void suicide(){
+   
+    int k=3;
+    while(k<=cirCount){
+    if(ball[1].intersects2(ball[2])==false && ball[1].intersects(ball[k])){
+     cirCount=k;
+     repaint();
+    }
+    k++;
+    }
+  }
+  
+  public void eat(){
+    if(b[1].intersects(food[foodCount].x,food[foodCount].y,size,size)){
+     newFood(); 
+     newBall();
+      repaint();
+    }
+     if(b[1].intersects(enemy[enemyCount].x,enemy[enemyCount].y,2*size,2*size)){
+     newEnemy();
+     repaint();
+    } 
+    int k=2;
+    while(k<=cirCount){
+    
+      if(ball[k].intersects(enemy[enemyCount])){
+        cirCount=k-1;
+        repaint();
+      }
+    k++;
+    }
+  }
+  
+ 
+  
+  public void newFood(){
+   if(foodCount<numOfObjects-1){
+      foodCount++;
+      repaint();
+    } 
+   else{
+    foodCheck=false; 
+   }
+  }
+  
+  public void newEnemy(){
+   if(enemyCount<numOfObjects-1){
+      enemyCount++;
+      repaint();
+    } 
+   else{
+    enemyCheck=false; 
+   }
+  }
+  
+  public double distPoints(double x1,double y1,double x2, double y2){
+   return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2)); 
+  }
+  
+  public double distPoints1D(double x1,double x2){
+   return x2-x1; 
+  }
+  
+  public static void main(String[] args){
+   new WormGame(); 
+  }
+  
+  
+}

@@ -1,0 +1,401 @@
+ import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+import java.lang.Math;
+import java.awt.geom.*;
+
+public class Circles extends JFrame implements ActionListener, KeyListener, MouseListener{
+  
+  int ballCount=0;
+  int maxBallCount=100;
+  double size=40;
+  int xSize=1000;
+  int ySize=600;
+  
+  Ball[] ball;
+  Ellipse2D.Double[] b;
+  int k=1;
+  Random rand;
+  Timer timer;
+  
+  boolean selectmode=false;
+  int selected=0;
+  
+  public Circles(){
+  
+  Container window = getContentPane();
+  addKeyListener(this);
+  addMouseListener(this);
+  setSize(1000,600);
+  setFocusable(true);
+  setTitle("Circles");
+  setVisible(true);
+  
+  rand = new Random();
+  
+  timer = new Timer(20,this);
+  timer.start();
+  
+  ball = new Ball[maxBallCount+1];
+  b = new Ellipse2D.Double[maxBallCount+1];
+  
+
+  
+  repaint();
+  
+  }
+  
+  public void paint(Graphics g){
+    super.paint(g);
+    Graphics2D g2d=(Graphics2D)g;
+    
+    k=1;
+    while(k<=ballCount){
+    g2d.draw(b[k] = new Ellipse2D.Double(ball[k].x-size/2,ball[k].y-size/2,size,size));
+    k++;
+    }
+    
+    if(ballCount>0){
+    g2d.fill(b[selected]);
+    }
+    
+  }
+  
+  public void actionPerformed(ActionEvent evt){
+  
+    if(evt.getSource()==timer){
+     
+      k=1;
+      while(k<=ballCount){
+       ball[k].physics();
+       
+       if(k!=selected){
+        //ball[k].grav(ball[selected].x,ball[selected].y); 
+       }
+       
+       ball[k].move();
+       
+       if(/*k!=selected*/true){
+       int j=1;
+       while(j<=ballCount){
+         if(ball[k].intersects(ball[j].x,ball[j].y) && j!=k){
+           hit(k,j);
+         //ball[k].hit(ball[j].x,ball[j].y,ball[j].xv,ball[j].yv);
+         //ball[j].hit(ball[k].x,ball[k].y,ball[k].xv,ball[k].yv);
+         //if(ball[k].tempX != ball[k].x){timer.stop();}
+         }
+         
+         
+         
+         j++;
+       }
+      }
+      
+       
+       k++; 
+      }
+      
+      k=1;
+      while(k<=ballCount){
+        ball[k].move();
+        k++;
+      }
+      
+      repaint();
+      
+    }
+    
+  }
+  
+  public void newBall(double newX, double newY){
+    
+    ball[ballCount+1] = new Ball(newX,newY);
+    ballCount++;
+    
+  }
+  
+  public void hit(int k,int j){
+    
+    double x=ball[k].x;
+    double y=ball[k].y;
+    double xv=ball[k].xv;
+    double yv=ball[k].yv;
+    double ox=ball[j].x;
+    double oy=ball[j].y;
+    double oxv=ball[j].xv;
+    double oyv=ball[j].yv;
+    
+    double cangle=Math.atan((x-ox)/(y-oy));
+    
+    double normx=x-ox;
+    double normy=y-oy;
+    
+    double magnorm=Math.sqrt(normx*normx+normy*normy);
+    double overlap=(size-distPts2D(x,y,ox,oy))/2;
+    
+    if(x>ox){
+      ball[k].x=x+overlap*normx/magnorm;
+      ball[j].x=ox+overlap*normx/magnorm;
+    }
+    if(ox>x){
+      ball[k].x=x+overlap*normx/magnorm;
+      ball[j].x=ox+overlap*normx/magnorm;
+    }
+    if(y>oy){
+      ball[k].y=y+overlap*normy/magnorm;
+      ball[j].y=oy+overlap*normy/magnorm;
+    }
+    if(oy>y){
+      ball[k].y=y+overlap*normy/magnorm;
+      ball[j].y=oy+overlap*normy/magnorm;
+    }
+    
+    
+    double magv=Math.sqrt(xv*xv+yv*yv);
+    double magov=Math.sqrt(oxv*oxv+oyv*oyv);
+    
+    double vprojnorm=xv*normx+yv*normy;
+    double vprojnormx=vprojnorm*normx/Math.sqrt(normx*normx+normy*normy);
+    double vprojnormy=vprojnorm*normy/Math.sqrt(normx*normx+normy*normy);
+    
+    double ovprojnorm=oxv*normx+yv*normy;
+    double ovprojnormx=ovprojnorm*normx/Math.sqrt(normx*normx+normy*normy);
+    double ovprojnormy=ovprojnorm*normy/Math.sqrt(normx*normx+normy*normy);
+    
+    magv= Math.sqrt(Math.pow(xv-vprojnormx+ovprojnormx,2) + Math.pow(yv-vprojnormy+ovprojnormy,2));
+    
+    ball[k].tempXv=xv-vprojnormx+ovprojnormx;
+    ball[k].tempYv=yv-vprojnormy+ovprojnormy;
+    
+    //ball[j].tempXv=oxv-ovprojnormx+vprojnormx;
+    //ball[j].tempYv=oyv-ovprojnormy+vprojnormy;
+    
+    
+    /*
+    double angle=Math.atan(xv/yv);
+    
+    double nangle= (cangle-angle)+cangle+Math.PI;
+    
+    tempXv= magv*Math.cos(nangle);
+    tempYv= magv*Math.sin(nangle);
+    */
+    
+    
+    
+  }
+  
+  public void mousePressed(MouseEvent m){
+    
+    if(selectmode){
+      
+      k=1;
+      while(k<=ballCount){
+        if(distPts2D(ball[k].x,ball[k].y,m.getX(),m.getY()) <= size/2){
+         ball[selected].selected=false;
+         selected=k;
+         ball[k].selected=true;
+         ball[k].xg=0;
+         ball[k].yg=0;
+         break;
+        }
+       k++;
+      }
+       repaint(); 
+      
+    }
+    
+    else{ 
+     if(ballCount<maxBallCount){
+     
+      newBall(m.getX(),m.getY());
+      if(selected==0){selected=1;ball[1].selected=true;}
+      
+     }
+    }
+    
+  }
+  
+  public void mouseReleased(MouseEvent m){
+    
+  }
+  
+  public void mouseExited(MouseEvent m){
+    
+  }
+  
+  public void mouseEntered(MouseEvent m){
+    
+  }
+  
+  public void mouseClicked(MouseEvent m){
+    
+  }
+  
+  public void keyPressed(KeyEvent key){
+   
+    if(selected>0){
+    if(key.getKeyCode()==37){
+      ball[selected].xa=-.2;
+    }
+    if(key.getKeyCode()==38){
+      ball[selected].ya=-.2;
+    }
+    if(key.getKeyCode()==39){
+      ball[selected].xa=.2;
+    }
+    if(key.getKeyCode()==40){
+      ball[selected].ya=.2;
+    }
+   }
+    
+    if(key.getKeyCode()==32){
+      
+      if(selectmode){selectmode=false;timer.start();}
+      else{selectmode=true;timer.stop();}
+      
+    }
+    
+  }
+  
+  public void keyReleased(KeyEvent key){
+      
+    if(key.getKeyCode()==37 && selected>0){
+      ball[selected].xa=0;
+    }
+    if(key.getKeyCode()==38 && selected>0){
+      ball[selected].ya=0;
+    }
+    if(key.getKeyCode()==39 && selected>0){
+      ball[selected].xa=0;
+    }
+    if(key.getKeyCode()==40 && selected>0){
+      ball[selected].ya=0;
+    }
+    
+  }
+  
+  public void keyTyped(KeyEvent key){
+      
+  }
+  
+  public double distPts2D(double x1,double y1,double x2,double y2){
+   return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2)); 
+  }
+  
+  public static void main(String[] args){
+   new Circles(); 
+  }
+  
+}
+
+ class Ball{
+  
+  boolean selected=false;
+   
+  double x;
+  double y;
+  double tempX;
+  double tempY;
+  double xg=0;
+  double yg=0;
+  double xa=0;
+  double ya=0;
+  double xv=0;
+  double yv=0;
+  double tempXv;
+  double tempYv;
+  
+  double friction=0.1;
+  
+  double xSize=1000;
+  double ySize=600;
+  double size=40;
+  double maxv=6;
+  
+  public Ball(){ 
+  
+  }
+  
+  public Ball(double nx, double ny){
+   x=nx;
+   y=ny;
+  }
+  
+  public boolean intersects(double ox,double oy){
+    if(distPts2D(x,y,ox,oy)<=size){return true;}
+    else{return false;}
+  }
+  
+  
+  
+  public void physics(){
+    
+    
+    
+    tempXv= xv+xa+xg;
+    tempYv= yv+ya+yg;
+    
+    if(xa==0 && tempXv<0){
+      tempXv=tempXv+friction;
+      if(tempXv>0){tempXv=0;}
+    }
+    if(xa==0 && tempXv>0){
+      tempXv=tempXv-friction;
+      if(tempXv<0){tempXv=0;}
+    }
+    if(ya==0 && tempYv<0){
+      tempYv=tempYv+friction;
+      if(tempYv>0){tempYv=0;}
+    }
+    if(ya==0 && tempYv>0){
+      tempYv=tempYv-friction;
+      if(tempYv<0){tempYv=0;}
+    }
+    
+    if(tempXv>maxv && xv>0){tempXv=maxv;}
+    if(tempXv<-maxv && xv<0){tempXv=-maxv;}
+    if(tempYv>maxv && yv>0){tempYv=maxv;}
+    if(tempYv<-maxv && yv<0){tempYv=-maxv;}
+    
+    
+    tempX= x+tempXv;
+    tempY= y+tempYv;
+    
+    if(tempX>xSize-size/2){tempXv=-tempXv;tempX=xSize-size/2;}
+    if(tempX<size/2){tempXv=-tempXv;tempX=size/2;}
+    if(tempY>ySize-size/2){tempYv=-tempYv;tempY=ySize-size/2;}
+    if(tempY<size/2+24){tempYv=-tempYv;tempY=size/2+24;}
+    
+    
+    
+  }
+  
+  public double distPts2D(double x1,double y1,double x2,double y2){
+   return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2)); 
+  }
+  
+
+  
+  public void grav(double ox,double oy){
+    
+    double maga=10/Math.pow(distPts2D(x,y,ox,oy),2);
+    xg=(ox-x)*maga;
+    yg=(oy-y)*maga;
+    
+  }
+  
+  public void move(){
+    
+    x=tempX;
+    y=tempY;
+    yv=tempYv;
+    xv=tempXv;
+    
+    
+  }
+  
+}
+
+
+

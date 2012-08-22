@@ -1,0 +1,48 @@
+public class Papa{
+  
+
+  public Papa(){
+    
+    
+    
+  }
+
+  int div(int a,int b){
+    
+    int result = -1;
+    
+    while(isPositive(a)){
+     
+      a = a-b;
+      result++;
+      
+    }
+    
+    return result;
+    
+  }
+
+  
+  boolean abs(int in){
+    if(in<0){return -in;}
+    else{return in;}
+  }
+  
+  boolean isPositive(int in){
+    if(in>=0){return true;}
+    else{return false;}
+  }
+
+  public static void main(String[] args){
+   
+    Papa papa = new Papa();
+    
+    System.out.println(""+papa.div(6,2));
+    
+  }
+
+}
+
+
+
+

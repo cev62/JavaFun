@@ -1,0 +1,256 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+import java.util.Random;
+import java.lang.Math;
+
+public class MouseTest extends JFrame
+  implements ActionListener, KeyListener, MouseListener
+{
+  
+  
+  
+  int numOfObjects=1000;
+    Random rand;
+  JLabel label;
+  Timer timer;
+  boolean bc1=false;
+  Ellipse2D b1;
+  BallStorage ball1;
+  boolean[] bc=new boolean[numOfObjects+1];
+  BallStorage[] ball=new BallStorage[numOfObjects+1];
+  Ellipse2D[] b=new Ellipse2D[numOfObjects+1];
+  int i=0;
+  int cirCount=0;
+  double change=1;
+  
+  
+  public MouseTest(){
+    
+     
+  
+    
+   Container window = getContentPane();
+  addKeyListener(this);
+  addMouseListener(this);
+  setSize(600,400);
+  setFocusable(true);
+  setTitle("Mouse Test");
+  setVisible(true);
+  window.setLayout(new BorderLayout());
+  label=new JLabel("", JLabel.CENTER);
+  label.setForeground(Color.BLACK);
+  window.add(label, BorderLayout.NORTH);
+  window.setBackground(Color.WHITE); 
+    timer=new Timer(20,this);
+    timer.start();
+   rand=new Random();
+    
+    
+    while(i<numOfObjects+1){
+  bc[i]=false;
+  ball[i]=new BallStorage();
+  i++;
+  }
+    
+  }
+  
+  
+  
+  public void paint(Graphics g){
+    super.paint(g);
+    Graphics2D g2d = (Graphics2D)g;
+    
+    GradientPaint backGround=new GradientPaint(0,0,Color.GREEN,600,0,Color.YELLOW);
+     //g2d.setPaint(backGround);
+     
+    int k=1;
+      while(k<=numOfObjects){
+      if(bc[k]){
+      g2d.draw(b[k]=new Ellipse2D.Double(ball[k].getX()-ball[k].getXSize()/2,ball[k].getY()-ball[k].getYSize()/2,ball[k].getXSize(),ball[k].getYSize()));
+      g2d.fill(b[k]);
+      }
+      k++;
+  }
+  }
+      
+  public void actionPerformed(ActionEvent evt){
+   
+    if(evt.getSource()==timer){
+      
+      
+      int k=1;
+      while(k<=cirCount){
+        if(bc[k]){
+          ball[k].setMousePosition(MouseInfo.getPointerInfo().getLocation().x,MouseInfo.getPointerInfo().getLocation().y);
+        }
+        k++;
+      }
+      
+      if(cirCount<numOfObjects &&ball[1].holdCheck){
+      cirCount++;
+      int size=rand.nextInt(20)+10;
+    ball[cirCount].setPoint(MouseInfo.getPointerInfo().getLocation().x,MouseInfo.getPointerInfo().getLocation().y-22);
+    ball[cirCount].setSize(size,size);
+    
+    bc[cirCount]=true;
+    
+    repaint();
+      } 
+      
+      
+      label.setText(Integer.toString(cirCount));
+      
+      k=1;
+      while(k<=cirCount){
+        if(bc[k]){
+          int j=1;
+          double xaccel=ball[k].xa;
+          double yaccel=ball[k].ya;
+     
+          while(j<=cirCount){
+            if(ball[k].x>ball[j].x){
+           xaccel=xaccel-(change);
+            }
+            else if(ball[k].x<ball[j].x){
+             xaccel=xaccel+(change); 
+            }
+            
+            if(ball[k].y>ball[j].y){
+           yaccel=yaccel-(change);
+            }
+            else if(ball[k].y<ball[j].y){
+             yaccel=yaccel+(change); 
+            }
+            
+            j++; 
+          }
+          if(cirCount!=1){
+          xaccel=xaccel/(cirCount-1);
+          yaccel=yaccel/(cirCount-1);
+          }
+          
+          
+          ball[k].setAccel(xaccel,yaccel);
+          
+        }
+        k++;
+      }
+                        
+      
+      
+      
+      k=1;
+      while(k<=cirCount){
+        if(bc[k]){
+          ball[k].physics();
+        }
+        k++;
+      }
+      k=1;
+      while(k<=cirCount){
+        if(bc[k]){
+          ball[k].move();
+        }
+        k++;
+      }
+      
+     repaint(); 
+    }
+  }
+  
+  public void keyPressed(KeyEvent k){
+    if(k.getKeyCode()==65){
+      if(ball[1].mouseCheck){
+       int i=1;
+       while(i<=cirCount){
+        ball[i].mouseCheck=false;
+        i++;
+       }
+      }
+      else{
+       int i=1;
+       while(i<=cirCount){
+        ball[i].mouseCheck=true;
+        i++;
+       }
+      }
+    }
+    
+    if(k.getKeyCode()==87){
+      if(ball[1].holdCheck){
+       int i=1;
+       while(i<=cirCount){
+        ball[i].holdCheck=false;
+        i++;
+       }
+      }
+      else{
+       int i=1;
+       while(i<=cirCount){
+        ball[i].holdCheck=true;
+        i++;
+       }
+      }
+    }
+  }
+  
+  public void keyReleased(KeyEvent k){
+    
+  }
+  
+  public void keyTyped(KeyEvent k){
+    
+  }
+  
+  public void mousePressed(MouseEvent m){
+    //String strx=Integer.toString(m.getX());
+    //String stry=Integer.toString(m.getY());
+   
+    
+    
+    if(cirCount<numOfObjects){
+      cirCount++;
+      int size=rand.nextInt(20)+10;
+    ball[cirCount].setPoint(m.getX(),m.getY());
+    ball[cirCount].setSize(size,size);
+    
+    bc[cirCount]=true;
+    
+    
+    //label.setText(strx + "," +stry+ " :"+Integer.toString(cirCount));
+    
+    repaint();
+    }
+  }
+  
+  public void mouseReleased(MouseEvent m){
+    
+  }
+  
+  public void mouseExited(MouseEvent m){
+    
+  }
+  
+  public void mouseEntered(MouseEvent m){
+    
+  }
+  
+  public void mouseClicked(MouseEvent m){
+    
+  }
+  
+  public static void main(String[] args){
+   new MouseTest(); 
+  }
+  
+  double distBetweenPointsXorY(double x1,double x2){
+   double distPoints=Math.abs(x1-x2);
+   //if(distPoints<0){distPoints=-distPoints;}
+    return distPoints; 
+  }
+  
+  
+  
+}
