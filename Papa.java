@@ -48,7 +48,7 @@ public class Papa{
     Calendar cal = Calendar.getInstance();
     long start = cal.getTimeInMillis();
     
-    int output = papa.div(2109900200,-0);
+    int output = papa.div(700,80);
     
     cal = Calendar.getInstance();
     long end = cal.getTimeInMillis();

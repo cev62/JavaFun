@@ -1,3 +1,5 @@
+import java.util.Calendar;
+
 public class Papa{
   
 
@@ -10,6 +12,10 @@ public class Papa{
   int div(int a,int b){
     
     int result = -1;
+    boolean antiSign = ((!isPositive(a) && isPositive(b)) || (isPositive(a) && !isPositive(b)));
+    
+    a = abs(a);
+    b = abs(b);
     
     while(isPositive(a)){
      
@@ -18,26 +24,36 @@ public class Papa{
       
     }
     
+    if(antiSign){
+      result = -result;
+    }
+    
     return result;
     
   }
-
-  
-  boolean abs(int in){
-    if(in<0){return -in;}
-    else{return in;}
-  }
   
   boolean isPositive(int in){
-    if(in>=0){return true;}
-    else{return false;}
+    return (in>=0);
+  }
+  
+  int abs(int in){
+    if(in>=0){return in;}
+    else{return -in;}
   }
 
   public static void main(String[] args){
    
     Papa papa = new Papa();
     
-    System.out.println(""+papa.div(6,2));
+    Calendar cal = Calendar.getInstance();
+    long start = cal.getTimeInMillis();
+    
+    int output = papa.div(2109900200,-0);
+    
+    cal = Calendar.getInstance();
+    long end = cal.getTimeInMillis();
+    
+    System.out.println(""+output+"\nTime: "+(end-start));
     
   }
 
