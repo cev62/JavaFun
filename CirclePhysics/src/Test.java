@@ -32,8 +32,8 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		c = new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 10);
 		//c.applyForceX(-100.0f);
 		//c.applyForceY(0.0f);
-		c.setFrictionS(100.0f);
-		c.setFrictionK(100.0f);
+		c.setFrictionS(200.0f);
+		c.setFrictionK(200.0f);
 		
 		javax.swing.Timer t = new Timer(5, this);
 		t.start();

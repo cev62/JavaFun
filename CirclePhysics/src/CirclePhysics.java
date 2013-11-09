@@ -57,15 +57,36 @@ public class CirclePhysics {
 		
 		// Calculate friction
 		float vmag = v.mag();
+		float fmag = f.mag();
+		boolean isKineticFrict = vmag != 0;
 		float frx = 0.0f, fry = 0.0f;
-		if(vmag != 0) {	
-			frx = (float) -(ufk * v.x / vmag / Math.sqrt(2));
-			fry = (float) -(ufk * v.y / vmag / Math.sqrt(2));
+		
+		if(isKineticFrict) {	
+			// Kinetic friction
+			frx = (float) -(ufk * m * v.x / vmag);
+			fry = (float) -(ufk * m * v.y / vmag);
 		}		
+		else if(fmag != 0){
+			// Static friction
+			frx = (float) -(ufs * m * f.x / fmag);
+			fry = (float) -(ufs * m * f.y / fmag);
+		}
+		
+		Vector fnet = new Vector(f.x, f.y);
+		if(!isKineticFrict) {
+			fnet.x = fnet.x + frx;
+			if(f.x * fnet.x < 0) {
+				fnet.x = 0.0f;
+			}
+			fnet.y = fnet.y + fry;
+			if(f.y * fnet.y < 0) {
+				fnet.y = 0.0f;
+			}
+		}
 		
 		// Set acceleration from applied force
-		a.x = f.x / m;
-		a.y = f.y / m;
+		a.x = fnet.x / m;
+		a.y = fnet.y / m;
 		
 		// Modify velocity based on acceleration
 		v.x += a.x * dt;
@@ -73,19 +94,20 @@ public class CirclePhysics {
 		
 		
 		
-		
-		// Apply friction
-		Vector prevV = new Vector(v.x, v.y);
-		v.x += frx / m * dt;
-		v.y += fry / m * dt;
-		// Account for friction changing the velocities sign
-		if (prevV.x * v.x < 0) {
-			v.x = 0.0f;
+		if(isKineticFrict) {
+			// Apply friction
+			Vector prevV = new Vector(v.x, v.y);
+			v.x += frx / m * dt;
+			v.y += fry / m * dt;
+			// Account for friction changing the velocities sign
+			if (prevV.x * v.x < 0) {
+				v.x = 0.0f;
+			}
+			if (prevV.y * v.y < 0) {
+				v.y = 0.0f;
+			}
 		}
-		if (prevV.y * v.y < 0) {
-			v.y = 0.0f;
-		}
-		
+		System.out.println("(" + frx + ", " + fry + ")");
 		// Apply the velocity to displacement
 		d.x += v.x * dt;
 		d.y += v.y * dt;
