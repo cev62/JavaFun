@@ -260,12 +260,12 @@ public class CirclePhysics {
 		 */
 		
 		float tmp = vn_a.x;
-		vn_a.x = vn_b.x;
-		vn_b.x = tmp;
+		vn_a.x = vn_b.x * b.m / a.m;
+		vn_b.x = tmp * a.m / b.m;
 		
 		tmp = vn_a.y;
-		vn_a.y = vn_b.y;
-		vn_b.y = tmp;
+		vn_a.y = vn_b.y * b.m / a.m;
+		vn_b.y = tmp * a.m / b.m;
 		
 		/*
 		 * Sum vectors back up
@@ -278,7 +278,7 @@ public class CirclePhysics {
 		b.v.y = vn_b.y + vt_b.y;
 		
 		/*
-		 * TODO implement momentum (mass)
+		 * TODO account for overlap
 		 */
 	}
 

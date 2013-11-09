@@ -33,7 +33,7 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 
 		c = new ArrayList<CirclePhysics>();
 		c.add(new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20));
-		c.add(new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20));
+		c.add(new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2.0f, 20));
 		
 		player = c.get(0);
 
