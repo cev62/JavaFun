@@ -55,48 +55,38 @@ public class CirclePhysics {
 	
 	public void physics(float dt) {
 		
-		//         v.x(unit) * ufk /sqrt(2)
-		
+		// Calculate friction
 		float vmag = v.mag();
 		float frx = 0.0f, fry = 0.0f;
-
-		if(v.x != 0){
-			frx = (float) -(ufk * m * v.x / vmag); /// Math.sqrt(2));
-			/*if(v.x > 0){
-				frx = -frx;
-				//System.out.println("Neg");
-			}*/
-			//System.out.println("Positive");
-		}
+		if(vmag != 0) {	
+			frx = (float) -(ufk * v.x / vmag / Math.sqrt(2));
+			fry = (float) -(ufk * v.y / vmag / Math.sqrt(2));
+		}		
 		
-		if(v.y != 0){
-			fry = (float) -(ufk * m * v.y / vmag); /// Math.sqrt(2));
-			/*if(v.y > 0){
-				fry = -fry;
-			}*/
-		}
-		
-		
+		// Set acceleration from applied force
 		a.x = f.x / m;
 		a.y = f.y / m;
 		
+		// Modify velocity based on acceleration
 		v.x += a.x * dt;
 		v.y += a.y * dt;
-
-		float prevVx = v.x;
-		float prevVy = v.y;
-		System.out.println("(" + frx + ", " + fry + ")");
-		v.x += (float) frx * v.x / vmag / Math.sqrt(2) * dt;
-		v.y += (float) fry * v.y / vmag / Math.sqrt(2) * dt;
 		
 		
-		if (prevVx * v.x < 0) {
+		
+		
+		// Apply friction
+		Vector prevV = new Vector(v.x, v.y);
+		v.x += frx / m * dt;
+		v.y += fry / m * dt;
+		// Account for friction changing the velocities sign
+		if (prevV.x * v.x < 0) {
 			v.x = 0.0f;
 		}
-		if (prevVy * v.y < 0) {
+		if (prevV.y * v.y < 0) {
 			v.y = 0.0f;
 		}
 		
+		// Apply the velocity to displacement
 		d.x += v.x * dt;
 		d.y += v.y * dt;
 		
