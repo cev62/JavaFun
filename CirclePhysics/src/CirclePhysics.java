@@ -213,13 +213,73 @@ public class CirclePhysics {
 		return r;
 	}
 	
-	void collide(CirclePhysics a) {
-		Vector n = new Vector(a.d.x -d.x, a.d.y - d.y);
-		float nMag = n.mag();
-		float scale = r / nMag;
+	void collide(CirclePhysics a, CirclePhysics b) {
 		
-		this.collideImmovable(n.x * scale, n.y * scale);
+		// Make a normal unit vector relative to a
+		Vector n_a = new Vector(b.d.x -a.d.x, b.d.y - a.d.y);
+		float n_aMag = n_a.mag();
+		n_a = new Vector(n_a.x / n_aMag, n_a.y / n_aMag);
 		
+		// Get the normal component of a's velocity
+		float v_aDotn_a = a.v.x * n_a.x + a.v.y * n_a.y;
+		Vector vn_a = new Vector(n_a.x * v_aDotn_a, n_a.y * v_aDotn_a);
+		
+		// Make a normal tangent vector relative to a
+		Vector t_a = new Vector(-n_a.y, n_a.x);
+		
+		// Get the tangential component of a's velocity
+		float v_aDott_a = a.v.x * t_a.x + a.v.y * t_a.y;
+		Vector vt_a = new Vector(t_a.x * v_aDott_a, t_a.y * v_aDott_a);
+		
+		/*
+		 * End repeat
+		 */
+		
+		// Make a normal unit vector relative to b
+		Vector n_b = new Vector(a.d.x - b.d.x, a.d.y - b.d.y);
+		float n_bMag = n_b.mag();
+		n_b = new Vector(n_b.x / n_bMag, n_b.y / n_bMag);
+		
+		// Get the normal component of b's velocity
+		float v_bDotn_b = b.v.x * n_b.x + b.v.y * n_b.y;
+		Vector vn_b = new Vector(n_b.x * v_bDotn_b, n_b.y * v_bDotn_b);
+		
+		// Make a normal tangent vector relative to b
+		Vector t_b = new Vector(-n_b.y, n_b.x);
+		
+		// Get the tangential component of a's velocity
+		float v_bDott_b = b.v.x * t_b.x + b.v.y * t_b.y;
+		Vector vt_b = new Vector(t_b.x * v_bDott_b, t_b.y * v_bDott_b);
+		
+		/*
+		 * End repeat
+		 */
+		
+		/*
+		 * Apply collision
+		 */
+		
+		float tmp = vn_a.x;
+		vn_a.x = vn_b.x;
+		vn_b.x = tmp;
+		
+		tmp = vn_a.y;
+		vn_a.y = vn_b.y;
+		vn_b.y = tmp;
+		
+		/*
+		 * Sum vectors back up
+		 */
+
+		a.v.x = vn_a.x + vt_a.x;
+		a.v.y = vn_a.y + vt_a.y;
+
+		b.v.x = vn_b.x + vt_b.x;
+		b.v.y = vn_b.y + vt_b.y;
+		
+		/*
+		 * TODO implement momentum (mass)
+		 */
 	}
 
 }

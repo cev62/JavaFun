@@ -11,10 +11,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 
 public class Test extends JFrame implements ActionListener, KeyListener{
 
-	CirclePhysics c, d;
+	ArrayList<CirclePhysics> c;
+	CirclePhysics player;
 	final int width = 800;
 	final int height = 600;
 	boolean keys[];
@@ -29,14 +31,16 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		
 		keys = new boolean[4];
 
-		c = new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20);
-		d = new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20);
-		//c.applyForceX(-100.0f);
-		//c.applyForceY(0.0f);
-		c.setFrictionS(100.0f);
-		c.setFrictionK(100.0f);
-		d.setFrictionS(100.0f);
-		d.setFrictionK(100.0f);
+		c = new ArrayList<CirclePhysics>();
+		c.add(new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20));
+		c.add(new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20));
+		
+		player = c.get(0);
+
+		for(CirclePhysics cir : c){
+			cir.setFrictionS(10.0f);
+			cir.setFrictionK(10.0f);
+		}
 		
 		javax.swing.Timer t = new Timer(5, this);
 		t.start();
@@ -47,32 +51,35 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 	public void paint(Graphics g) {
 		super.paint(g);
 	    Graphics2D g2d=(Graphics2D)g;
-	    g2d.fill(new Ellipse2D.Double(c.getX(), height-c.getY(), c.getR() * 2, c.getR() * 2));
-	    g2d.fill(new Ellipse2D.Double(d.getX(), height-d.getY(), d.getR() * 2, d.getR() * 2));
+	    for(CirclePhysics cir : c){
+	    g2d.fill(new Ellipse2D.Double(cir.getX(), height-cir.getY(), cir.getR() * 2, cir.getR() * 2));
+	    }
 	}
 	
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		c.applyForceX((keys[0] ? -300.0f : 0.0f) + (keys[2] ? 300.0f : 0.0f));
-		c.applyForceY((keys[1] ? 300.0f : 0.0f) + (keys[3] ? -300.0f : 0.0f));
+		player.applyForceX((keys[0] ? -300.0f : 0.0f) + (keys[2] ? 300.0f : 0.0f));
+		player.applyForceY((keys[1] ? 300.0f : 0.0f) + (keys[3] ? -300.0f : 0.0f));
+
+		for(CirclePhysics cir : c) {
+			cir.physics((float) 0.005);
+			if(cir.getX() + cir.getR() >= width) {
+				cir.collideImmovable(width - cir.getX(), 0.0f);
+			}
+			if(cir.getX() - cir.getR() <= 0) {
+				cir.collideImmovable(-cir.getX(), 0.0f);
+			}
+			if(cir.getY() + cir.getR() >= height) {
+				cir.collideImmovable(0.0f, height - cir.getY());
+			}
+			if(cir.getY() - cir.getR() <= 0) {
+				cir.collideImmovable(0.0f, -cir.getY());
+			}
+		}
 		
-		c.physics((float) 0.005);
-		if(c.getX() + c.getR() >= width) {
-			c.collideImmovable(width - c.getX(), 0.0f);
-		}
-		if(c.getX() - c.getR() <= 0) {
-			c.collideImmovable(-c.getX(), 0.0f);
-		}
-		if(c.getY() + c.getR() >= height) {
-			c.collideImmovable(0.0f, height - c.getY());
-		}
-		if(c.getY() - c.getR() <= 0) {
-			c.collideImmovable(0.0f, -c.getY());
-		}
-		
-		if(Math.pow(c.getY() - d.getY(), 2) + Math.pow(c.getX() - d.getX(), 2) < Math.pow(c.getR() + d.getR(), 2)){
-			c.collide(d);
+		if(Math.pow(player.getY() - c.get(1).getY(), 2) + Math.pow(player.getX() - c.get(1).getX(), 2) < Math.pow(player.getR() + c.get(1).getR(), 2)){
+			player.collide(player, c.get(1));
 		}
 		
 		repaint();
