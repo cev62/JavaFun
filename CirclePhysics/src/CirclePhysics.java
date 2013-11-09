@@ -107,17 +107,12 @@ public class CirclePhysics {
 				v.y = 0.0f;
 			}
 		}
-		System.out.println("(" + frx + ", " + fry + ")");
 		// Apply the velocity to displacement
 		d.x += v.x * dt;
 		d.y += v.y * dt;
 		
 		/*
 		 * TODO: Add tmp_v and tmp_d capabilities for unified movement
-		 */
-		
-		/*
-		 * TODO: Implement ufs
 		 */
 		
 	}
@@ -130,6 +125,12 @@ public class CirclePhysics {
 		float nMag = n.mag();
 		n.x = n.x / nMag;
 		n.y = n.y / nMag;
+		
+		// Adjust for overlap
+		float overlap = r - nMag;
+		Vector overlapVector = new Vector(overlap * n.x, overlap * n.y);
+		d.x -= overlapVector.x;
+		d.y -= overlapVector.y;
 		
 		// Compute dot product
 		float vDotn = v.x * n.x + v.y * n.y; 

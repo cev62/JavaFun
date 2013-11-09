@@ -22,18 +22,18 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 	public Test() {
 		Container window = getContentPane();
 		addKeyListener(this);	
-		setSize(width,height);
+		setSize(width, height);
 		setFocusable(true);
 		setTitle("Cicle Physics Test");
 		setVisible(true);
 		
 		keys = new boolean[4];
 		
-		c = new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 10);
+		c = new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20);
 		//c.applyForceX(-100.0f);
 		//c.applyForceY(0.0f);
-		c.setFrictionS(200.0f);
-		c.setFrictionK(200.0f);
+		c.setFrictionS(100.0f);
+		c.setFrictionK(100.0f);
 		
 		javax.swing.Timer t = new Timer(5, this);
 		t.start();
@@ -54,20 +54,21 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		c.applyForceY((keys[1] ? 300.0f : 0.0f) + (keys[3] ? -300.0f : 0.0f));
 		
 		c.physics((float) 0.005);
-		if(c.getX() + c.getR() >= width-10) {
-			c.collideImmovable(1.0f, 0.0f);
+		if(c.getX() + c.getR() >= width) {
+			c.collideImmovable(width - c.getX(), 0.0f);
 		}
 		if(c.getX() - c.getR() <= 0) {
-			c.collideImmovable(-1.0f, 0.0f);
+			c.collideImmovable(-c.getX(), 0.0f);
 		}
-		if(c.getY() + c.getR() >= height-10) {
-			c.collideImmovable(0.0f, 1.0f);
+		if(c.getY() + c.getR() >= height) {
+			c.collideImmovable(0.0f, height - c.getY());
 		}
 		if(c.getY() - c.getR() <= 0) {
-			c.collideImmovable(0.0f, -1.0f);
+			c.collideImmovable(0.0f, -c.getY());
 		}
 		repaint();
-		
+
+		System.out.println("(" + c.getX() + ", " + c.getY() + ")");
 	}
 	
 	/**
