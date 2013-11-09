@@ -29,13 +29,13 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		
 		keys = new boolean[4];
 		
-		c = new CirclePhysics(400, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10);
+		c = new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 10);
 		//c.applyForceX(-100.0f);
 		//c.applyForceY(0.0f);
-		c.applyFrictionX(100.0f);
-		c.applyFrictionY(100.0f);
+		c.setFrictionS(100.0f);
+		c.setFrictionK(100.0f);
 		
-		javax.swing.Timer t = new Timer(20, this);
+		javax.swing.Timer t = new Timer(5, this);
 		t.start();
 		
 		repaint();
@@ -53,7 +53,7 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		c.applyForceX((keys[0] ? -300.0f : 0.0f) + (keys[2] ? 300.0f : 0.0f));
 		c.applyForceY((keys[1] ? 300.0f : 0.0f) + (keys[3] ? -300.0f : 0.0f));
 		
-		c.physics((float) 0.02);
+		c.physics((float) 0.005);
 		if(c.getX() + c.getR() >= width-10) {
 			c.collideImmovable(1.0f, 0.0f);
 		}
