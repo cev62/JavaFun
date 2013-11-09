@@ -14,7 +14,7 @@ import java.awt.geom.Ellipse2D;
 
 public class Test extends JFrame implements ActionListener, KeyListener{
 
-	CirclePhysics c;
+	CirclePhysics c, d;
 	final int width = 800;
 	final int height = 600;
 	boolean keys[];
@@ -28,12 +28,15 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		setVisible(true);
 		
 		keys = new boolean[4];
-		
+
 		c = new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20);
+		d = new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20);
 		//c.applyForceX(-100.0f);
 		//c.applyForceY(0.0f);
 		c.setFrictionS(100.0f);
 		c.setFrictionK(100.0f);
+		d.setFrictionS(100.0f);
+		d.setFrictionK(100.0f);
 		
 		javax.swing.Timer t = new Timer(5, this);
 		t.start();
@@ -45,6 +48,7 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		super.paint(g);
 	    Graphics2D g2d=(Graphics2D)g;
 	    g2d.fill(new Ellipse2D.Double(c.getX(), height-c.getY(), c.getR() * 2, c.getR() * 2));
+	    g2d.fill(new Ellipse2D.Double(d.getX(), height-d.getY(), d.getR() * 2, d.getR() * 2));
 	}
 	
 
@@ -66,9 +70,14 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 		if(c.getY() - c.getR() <= 0) {
 			c.collideImmovable(0.0f, -c.getY());
 		}
+		
+		if(Math.pow(c.getY() - d.getY(), 2) + Math.pow(c.getX() - d.getX(), 2) < Math.pow(c.getR() + d.getR(), 2)){
+			c.collide(d);
+		}
+		
 		repaint();
 
-		System.out.println("(" + c.getX() + ", " + c.getY() + ")");
+		//System.out.println("(" + c.getX() + ", " + c.getY() + ")");
 	}
 	
 	/**

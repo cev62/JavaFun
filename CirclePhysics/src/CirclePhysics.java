@@ -24,8 +24,8 @@ public class CirclePhysics {
 	}
 	
 	//private float x, y, xv, yv, xa, ya, xf, yf, m, r;
-	private float m, r, ufk, ufs;
-	private Vector d, v, a, f, p;
+	float m, r, ufk, ufs;
+	Vector d, v, a, f, p;
 	
 	/**
 	 * Constructor with specified initial values for all variables
@@ -211,6 +211,15 @@ public class CirclePhysics {
 	}
 	public float getR() {
 		return r;
+	}
+	
+	void collide(CirclePhysics a) {
+		Vector n = new Vector(a.d.x -d.x, a.d.y - d.y);
+		float nMag = n.mag();
+		float scale = r / nMag;
+		
+		this.collideImmovable(n.x * scale, n.y * scale);
+		
 	}
 
 }
