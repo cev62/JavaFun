@@ -278,6 +278,37 @@ public class CirclePhysics {
 		b.v.y = vn_b.y + vt_b.y;
 		
 		/*
+		 * Overlap
+		 */
+		float overlap = a.r + b.r - n_aMag;
+		Vector overlapVector_a = new Vector(n_a.x * overlap, n_a.y * overlap);
+		Vector overlapVector_b = new Vector(n_b.x * overlap, n_b.y * overlap);
+		
+		// Get the normal and tangential components of a's displacement
+		float d_aDotn_a = a.d.x * n_a.x + a.d.y * n_a.y;
+		Vector dn_a = new Vector(n_a.x * d_aDotn_a, n_a.y * d_aDotn_a);
+		float d_aDott_a = a.d.x * t_a.x + a.d.y * t_a.y;
+		Vector dt_a = new Vector(t_a.x * d_aDott_a, t_a.y * d_aDott_a);
+		
+		// Get the normal and tangential components of a's displacement
+		float d_bDotn_b = b.d.x * n_b.x + b.d.y * n_b.y;
+		Vector dn_b = new Vector(n_b.x * d_bDotn_b, n_b.y * d_bDotn_b);
+		float d_bDott_b = b.d.x * t_b.x + b.d.y * t_b.y;
+		Vector dt_b = new Vector(t_b.x * d_bDott_b, t_b.y * d_bDott_b);
+
+		// apply overlap
+		//dn_a.x += overlapVector_a.x;
+		//dn_a.y += overlapVector_a.y;
+		//dn_b.x += overlapVector_b.x;
+		//dn_b.y += overlapVector_b.y;
+		
+		// Sum displacement vectors
+		a.d.x = dn_a.x + dt_a.x;
+		a.d.y = dn_a.y + dt_a.y;
+		b.d.x = dn_b.x + dt_b.x;
+		b.d.y = dn_b.y + dt_b.y;
+		
+		/*
 		 * TODO account for overlap
 		 */
 	}

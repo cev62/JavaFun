@@ -33,7 +33,7 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 
 		c = new ArrayList<CirclePhysics>();
 		c.add(new CirclePhysics(100, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20));
-		c.add(new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2.0f, 20));
+		c.add(new CirclePhysics(700, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 20));
 		
 		player = c.get(0);
 
@@ -78,6 +78,10 @@ public class Test extends JFrame implements ActionListener, KeyListener{
 			}
 		}
 		
+		
+		/*
+		 * TODO: add generalized collision for all entities
+		 */
 		if(Math.pow(player.getY() - c.get(1).getY(), 2) + Math.pow(player.getX() - c.get(1).getX(), 2) < Math.pow(player.getR() + c.get(1).getR(), 2)){
 			player.collide(player, c.get(1));
 		}
