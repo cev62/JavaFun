@@ -61,12 +61,12 @@ public class Robot {
 	public void controlOutputs()
 	{
 		w = (Math.atan2(person_d.y, person_d.x) - Math.PI/2) * 3;
-		if(Math.abs(w) < 0.3 ){
+		//if(Math.abs(w) < 0.3 ){
 			vt = (person_d.mag() - (l + 20 + 40)) / 2;
-		}
-		else{
-			vt = 0;
-		}
+		//}
+		//else{
+		//	vt = 0;
+		//}
 		
 		setDriveVtW(vt, w);
 	}

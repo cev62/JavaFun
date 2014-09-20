@@ -60,10 +60,8 @@ public class FollowingRobot extends JFrame implements ActionListener, KeyListene
 	    double dx = robot.d.x + robot.l*sint - robot.r*cost;
 	    double dy = robot.d.y - robot.l*cost - robot.r*sint;
 	    g2d.draw(new Line2D.Double(ax, height-ay, robot.d.x, height-robot.d.y));
-	    //g2d.draw(new Ellipse2D.Double(robot.d.x - Math.sqrt(robot.l*robot.l + robot.r*robot.r), robot.d.y - Math.sqrt(robot.l*robot.l + robot.r*robot.r), Math.sqrt(robot.l*robot.l + robot.r*robot.r)*2,2*Math.sqrt(robot.l*robot.l + robot.r*robot.r) ));
 	    g2d.draw(new Line2D.Double(bx, height-by, robot.d.x, height-robot.d.y));
-	    //g2d.draw(new Line2D.Double(cx, cy, robot.d.x, robot.d.y));
-	    //g2d.draw(new Line2D.Double(dx, dy, robot.d.x, robot.d.y));
+
 	    g2d.draw(new Line2D.Double(ax, height-ay, bx, height-by));
 	    g2d.draw(new Line2D.Double(bx, height-by, cx, height-cy));
 	    g2d.draw(new Line2D.Double(cx, height-cy, dx, height-dy));
@@ -71,7 +69,7 @@ public class FollowingRobot extends JFrame implements ActionListener, KeyListene
 	    g2d.draw(new Ellipse2D.Double(person.getX()-person.getR(), height-(person.getY()+person.getR()), person.getR() * 2, person.getR() * 2));
 	    g2d.fill(new Ellipse2D.Double(person.getX(), height-(person.getY()), 2, 2));
 	    
-	    g2d.fill(new Ellipse2D.Double(robot.person_d.x/2 + 400, height-(robot.person_d.y/2 + 300), 10, 10));
+	    //g2d.fill(new Ellipse2D.Double(robot.person_d.x/2 + 400, height-(robot.person_d.y/2 + 300), 10, 10));
 	}
 	
 	/**
